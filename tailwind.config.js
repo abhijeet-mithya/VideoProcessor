@@ -11,6 +11,10 @@ module.exports = {
   theme: {
     colors: {
       'gray-1': "#161A20",
+      'gray-2': "#45484C",
+      'gray-3': "#B2B2B2",
+      'gray-4': "#2B2B2B",
+      'slider-color': '#62D5B0',
       ...colors
     },
     fontFamily: {
