@@ -1,28 +1,44 @@
-import { Button, CardMedia, Input } from "@material-ui/core";
+import { Backdrop, Button, CardMedia, CircularProgress, Input } from "@material-ui/core";
 import Head from "next/head";
 import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { UploadFile } from "../../utilities/uploadFile";
 import { useRouter } from "next/router";
 import { DropzoneArea } from "material-ui-dropzone";
 import CloseIcon from "@material-ui/icons/Close";
+import { GetVideoStatus } from "../../utilities/getVideoStatus";
+import { VideoStatus } from "../../types/videoStatus";
 
 const FileUpload = () => {
     const [videoFile, setVideFile] = useState(null);
     const [video, setVideo] = useState<string | null>(null);
+    const [hasbackdrop, setHasbackdrop] = useState(false);
     const router = useRouter();
 
     const handleSubmit = async () => {
-        if(videoFile){
+        if (videoFile) {
             const res = await UploadFile(videoFile);        
             if (res?.status === 200) {
-                router.push(`frames/${res.data['job-id']}`);
+                setHasbackdrop(true);
+                let videoStatus: VideoStatus | null = null;
+                const interval = setInterval(async () => {
+                    if (
+                        videoStatus &&
+                        (videoStatus as any).status === "Processed"
+                    ) {
+                        clearInterval(interval);
+                        setHasbackdrop(false);
+                        router.push(`frames/${res.data["job-id"]}`);
+                    } else {
+                        videoStatus = await GetVideoStatus(res.data["job-id"]);
+                    }
+                }, 5000);
+                
             }
         }
     }
 
     const handleDrop = (drop: any) => {
-        console.log(drop[0]);
-        console.log(typeof drop[0]);
+        console.log(drop);
         setVideFile(drop[0]);
         if (drop[0]) {
             console.log(URL.createObjectURL(drop[0]));
@@ -36,17 +52,22 @@ const FileUpload = () => {
 
     return (
         <div>
+            <Backdrop className={"!z-[3]"} open={hasbackdrop}>
+                <CircularProgress color='inherit' />
+            </Backdrop>
             {video === null ? (
                 <DropzoneArea
                     acceptedFiles={["video/*"]}
                     dropzoneClass={
                         "!rounded-none text-gray-3 !bg-gray-2 !w-[30rem] h-[30rem] !border-2 !border-solid !border-gray-3 uppercase  flex flex-col justify-center items-center"
                     }
+                    maxFileSize={50000000}
                     Icon={EmptyIcon as unknown as ReactElement}
                     dropzoneText={"Drop Video Here"}
                     filesLimit={1}
-                    onChange={handleDrop}
-                    showAlerts={false}
+                    onChange={(e) => {
+                        handleDrop(e);
+                    }}
                 />
             ) : (
                 <div className='relative !rounded-none text-gray-3 !bg-gray-2 !w-[30rem] h-[30rem] !border-2 !border-solid !border-gray-3 uppercase  flex flex-col justify-center items-center'>
