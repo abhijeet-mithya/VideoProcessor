@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react'
+import Base64Img from '../../../components/Base64Img';
 import EditOptions from '../../../components/EditOptions';
 import { ApplyEdits } from '../../../utilities/applyEdits';
 
@@ -29,7 +30,7 @@ const Edit = () => {
 
     const handleEdit = async () => {
         if (id && frameId) {
-            const res = await ApplyEdits("/" + id + "/frames/" + frameId, editOptions);
+            const res = await ApplyEdits(id as string,Number(frameId), editOptions);
             setEditedFrame(`data:image/png;base64,${res.artifacts[0].base64}`);
         }
     };
@@ -37,22 +38,26 @@ const Edit = () => {
     return (
         <div className=' bg-gray-1 flex flex-row items-center'>
             <div className='w-[35%] bg-gray-1 h-screen flex flex-row items-center pt-[5rem] border-r-2 border-solid border-gray-4  px-4'>
-                <img
-                    src={`${process.env.NEXT_PUBLIC_API}/${id}/frames/${frameId}`}
-                    alt={"Original Image"}
-                    className='w-fit h-fit'
+                <Base64Img
+                    jobId={id as string}
+                    frameId={Number(frameId)}
+                    classes={"w-fit h-fit"}
                 />
             </div>
             <div className='w-[35%] bg-gray-1 h-screen flex flex-row items-center pt-[5rem] px-4'>
-                <img
-                    ref={ref}
-                    src={
-                        editedFrame ||
-                        `${process.env.NEXT_PUBLIC_API}/${id}/frames/${frameId}`
-                    }
-                    alt={"Edited Image"}
-                    className='w-fit h-fit'
-                />
+                {editedFrame ? (
+                    <img
+                        alt="edited image"
+                        src={editedFrame}
+                        className={"w-fit h-fit"}
+                    />
+                ) : (
+                    <Base64Img
+                        jobId={id as string}
+                        frameId={Number(frameId)}
+                        classes={"w-fit h-fit"}
+                    />
+                )}
             </div>
             <div className='w-[30%] bg-gray-4 h-screen flex flex-row items-center overflow-y-auto'>
                 <EditOptions

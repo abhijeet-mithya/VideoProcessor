@@ -70,29 +70,31 @@ const EditOptions: FC<EditOptionsProps> = ({
                 </div>
                 {editOptions["text_prompts"].map((data, promptNum) => {
                     return (
-                        <>
-                            <div className='flex gap-4 pb-[0.8rem]'>
-                                {PromptEditOptions.map((options, id) => {
-                                    return (
-                                        <div
-                                            key={id}
-                                            className={
-                                                id === 0 ? "flex-[2]" : "flex-1"
-                                            }>
-                                            <EditingTextField
-                                                {...({
-                                                    ...options,
-                                                    setEditOptions: (e) => {
-                                                        setPromptValue(promptNum, id, e);
-                                                    },
-                                                    returnOption: true,
-                                                } as EditingTextFieldProps)}
-                                            />
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </>
+                        <div className='flex gap-4 pb-[0.8rem]' key={promptNum}>
+                            {PromptEditOptions.map((options, id) => {
+                                return (
+                                    <div
+                                        key={id}
+                                        className={
+                                            id === 0 ? "flex-[2]" : "flex-1"
+                                        }>
+                                        <EditingTextField
+                                            {...({
+                                                ...options,
+                                                setEditOptions: (e) => {
+                                                    setPromptValue(
+                                                        promptNum,
+                                                        id,
+                                                        e
+                                                    );
+                                                },
+                                                returnOption: true,
+                                            } as EditingTextFieldProps)}
+                                        />
+                                    </div>
+                                );
+                            })}
+                        </div>
                     );
                 })}
             </div>

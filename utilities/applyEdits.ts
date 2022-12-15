@@ -1,18 +1,21 @@
 import axios from "axios";
 import Frame from "../public/Frame.jpg";
+import { GetFrames } from "./getFrames";
 
-export const ApplyEdits = async (fileInput: string, editOptions: object) => {
-    if (fileInput === null) return;
-
+export const ApplyEdits = async (
+    jobId: string,
+    frameId: number,
+    editOptions: object
+) => {
     const headers = {
         "s-api-key": process.env.NEXT_PUBLIC_STABILITYAPI,
         "Content-Type": "multipart/form-data",
     };
 
-    const imageResponse = await axios.get(fileInput, {
-        responseType: "arraybuffer",
-    });
-    const imageFile = new Blob([imageResponse.data]);
+    const base64Str = await GetFrames(jobId, frameId);
+
+    var bufferStr = Buffer.from(base64Str, "base64");
+    const imageFile = new Blob([bufferStr]);
 
     const formData = new FormData();
     formData.append("init_image", imageFile);

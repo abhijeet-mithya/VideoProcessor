@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
+import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Base64Img from "../../../components/Base64Img";
 import { VideoStatus, VideoStatusDetails } from "../../../types/videoStatus";
 import { GetVideoStatus } from "../../../utilities/getVideoStatus";
 
@@ -50,9 +52,9 @@ const Frames = () => {
                                     }}
                                     className='cursor-pointer transition-all duration-300 hover:scale-105 
                             hover:shadow-[0_0px_20px_-12px_rgba(255,255,255)]'>
-                                    <img
-                                        alt={`frame-${key}`}
-                                        src={`${process.env.NEXT_PUBLIC_API}/${id}/frames/${frameId}`}
+                                    <Base64Img
+                                        jobId={id as string}
+                                        frameId={frameId}
                                     />
                                 </div>
                             );
