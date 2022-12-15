@@ -1,7 +1,7 @@
 import axios from "axios";
 import Frame from "../public/Frame.jpg";
 
-export const ApplyEdits = async (fileInput: string) => {
+export const ApplyEdits = async (fileInput: string, editOptions: object) => {
     if (fileInput === null) return;
 
     const headers = {
@@ -9,20 +9,6 @@ export const ApplyEdits = async (fileInput: string) => {
         "Content-Type": "multipart/form-data",
     };
 
-    const editOptions = {
-        text_prompts: [
-            {
-                text: "A Lady wearing lab glasses, holding a flask",
-                weight: 1,
-            },
-            {
-                text: "((((ugly)))), (((duplicate))), ((morbid)), ((mutilated)), out of frame, extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck)))",
-                weight: -1.3,
-            },
-        ],
-        steps: 50,
-    };
-    
     const imageResponse = await axios.get(fileInput, {
         responseType: "arraybuffer",
     });

@@ -3,20 +3,33 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react'
 import EditOptions from '../../../components/EditOptions';
 import { ApplyEdits } from '../../../utilities/applyEdits';
-import { out } from '../../../components/EditOptions/output';
-import Image from 'next/image';
+
 
 const Edit = () => {
     const router = useRouter();        
     const { id, frameId } = router.query;
 
     const [editedFrame, setEditedFrame] = useState<string | null>(null);
+    const [editOptions, setEditOptions] = useState<object>({
+        text_prompts: [
+            {
+                text: "A Lady wearing lab glasses, holding a flask",
+                weight: 1,
+            },
+        ],
+        steps: 50,
+    });
+
+    useEffect(() => {
+      console.log("editOptions: ", editOptions);
+    }, [editOptions])
+    
 
     const ref = useRef<HTMLImageElement | null>(null);
 
     const handleEdit = async () => {
         if (id && frameId) {
-            const res = await ApplyEdits("/" + id + "/frames/" + frameId);
+            const res = await ApplyEdits("/" + id + "/frames/" + frameId, editOptions);
             setEditedFrame(`data:image/png;base64,${res.artifacts[0].base64}`);
         }
     };
@@ -41,8 +54,12 @@ const Edit = () => {
                     className='w-fit h-fit'
                 />
             </div>
-            <div className='w-[30%] bg-gray-4 h-screen flex flex-row items-center pt-[5rem] p-[2rem] overflow-y-auto'>
-                <EditOptions handleEdit={handleEdit} />
+            <div className='w-[30%] bg-gray-4 h-screen flex flex-row items-center overflow-y-auto'>
+                <EditOptions
+                    handleEdit={handleEdit}
+                    setEditOptions={(op) => setEditOptions(op)}
+                    editOptions={editOptions}
+                />
             </div>
         </div>
     );

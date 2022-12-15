@@ -38,13 +38,20 @@ const muiTheme = createMuiTheme({
 });
 
 const EditingSlider: FC<EditingSliderProps> = (props) => {
-    const { name, desc, high, low } = props;
-    const [sliderValue, setSliderValue] = useState(0);
+    const { name, id, desc, high, low, defaultValue, setEditOptions } = props;
+    const [sliderValue, setSliderValue] = useState(defaultValue);
 
     const handleChange = (event: any, newValue: number | number[]) => {
         setSliderValue(newValue as number);
+        if (setEditOptions)
+            setEditOptions((options: any) => {
+                const newOptions = {
+                    ...options,
+                };
+                newOptions[id] = newValue;
+                return newOptions;
+            });
     };
-
 
     return (
         <div className='w-full flex flex-col gap-[0.3rem]'>
