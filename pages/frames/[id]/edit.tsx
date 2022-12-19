@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { Backdrop, CircularProgress } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react'
 import Base64Img from '../../../components/Base64Img';
@@ -10,6 +11,7 @@ const Edit = () => {
     const router = useRouter();        
     const { id, frameId } = router.query;
 
+    const [hasbackdrop, setHasbackdrop] = useState(false);
     const [editedFrame, setEditedFrame] = useState<string | null>(null);
     const [editOptions, setEditOptions] = useState<object>({
         text_prompts: [
@@ -29,8 +31,14 @@ const Edit = () => {
     const ref = useRef<HTMLImageElement | null>(null);
 
     const handleEdit = async () => {
+        setHasbackdrop(true);
         if (id && frameId) {
-            const res = await ApplyEdits(id as string,Number(frameId), editOptions);
+            const res = await ApplyEdits(id as string, Number(frameId), editOptions).then((data) => {
+                setHasbackdrop(false);
+                return data;
+            }).catch((err) => {
+                setHasbackdrop(false);
+            });
             setEditedFrame(`data:image/png;base64,${res.artifacts[0].base64}`);
         }
     };
@@ -44,10 +52,13 @@ const Edit = () => {
                     classes={"w-fit h-fit"}
                 />
             </div>
-            <div className='w-[35%] bg-gray-1 h-screen flex flex-row items-center pt-[5rem] px-4'>
+            <div className='relative w-[35%] bg-gray-1 h-screen flex flex-row items-center pt-[5rem] px-4'>
+                <Backdrop className={"!z-[3] !absolute"} open={hasbackdrop}>
+                    <CircularProgress color='inherit' />
+                </Backdrop>
                 {editedFrame ? (
                     <img
-                        alt="edited image"
+                        alt='edited image'
                         src={editedFrame}
                         className={"w-fit h-fit"}
                     />
